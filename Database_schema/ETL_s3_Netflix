@@ -1,0 +1,96 @@
+-- create 3 schemas for landing, curated and consumption
+create or replace schema landing_zone;
+create or replace schema curated_zone;
+create or replace schema consumption_zone;
+
+-- snowflake has 3 sections Landing zone, Curated Zone and Consumption zone
+-- landing zone is where the data lands from internal stage or external stage (AZURE BLOB< AWS s3 etc)
+-- from landing data moves into curated then into consumtpion where actual tables are situated
+-- create landing tables for tables in db
+-- all landing tables are transient
+-- all the columns are made varchar  to ensure data is being loaded for test. later the column datat types can be changed
+USE SCHEMA landing_zone;
+create or replace transient table landing_netflix_titles(
+    SHOW_ID VARCHAR,
+    TITLE VARCHAR,
+    TYPE VARCHAR,
+    DIRECTOR VARCHAR,
+    CAST VARCHAR,
+    RELEASE_YEAR VARCHAR ,
+    RATING VARCHAR,
+    DURATION VARCHAR,
+    LISTED_IN VARCHAR,
+    DESCRIPTION VARCHAR
+)comment ='this is titles table with in landing schema';
+
+-- transient table
+create or replace transient table landing_movie_origin(
+    COUNTRY_ID VARCHAR,
+    COUNTRY_NAME VARCHAR
+)comment ='this is movie origin table with in landing schema';
+
+-- transient table
+create or replace transient table landing_netflix_movie_added(
+    TIME_ID VARCHAR,
+    DATE_ADDED VARCHAR
+)comment ='this is netflix movie added table with in landing schema';
+
+-- transient table
+create or replace transient table landing_netflix_trends(
+    VIEWING_ID VARCHAR,
+    SHOW_ID VARCHAR,
+    TIME_ID VARCHAR,
+    COUNTRY_ID VARCHAR
+)comment ='this is netflix trends table with in landing schema';
+
+-- display tables
+--show tables
+
+-- create a file format and load history data (input file in our case) as first time load to these landing tables
+create or replace file format netflix_titles
+type = 'csv' 
+compression = 'auto' 
+field_delimiter = ',' 
+record_delimiter = '\n' 
+skip_header = 1
+field_optionally_enclosed_by = '\042' 
+null_if = ('\\N');
+
+
+
+-- create currated tables for tables in db
+-- all currated tables are transient
+-- all the columns are made varchar to ensure data is being loaded for test. later the column datat types can be changed
+use schema curated_zone;
+create or replace transient table curated_netflix_titles(
+    SHOW_ID VARCHAR,
+    TITLE VARCHAR,
+    TYPE VARCHAR,
+    DIRECTOR VARCHAR,
+    CAST VARCHAR,
+    RELEASE_YEAR VARCHAR ,
+    RATING VARCHAR,
+    DURATION VARCHAR,
+    LISTED_IN VARCHAR,
+    DESCRIPTION VARCHAR
+)comment ='this is titles table with in curated schema';
+
+-- transient table
+create or replace transient table curated_movie_origin(
+    COUNTRY_ID VARCHAR,
+    COUNTRY_NAME VARCHAR
+)comment ='this is movie origin table with in curatedschema';
+
+-- transient table
+create or replace transient table curated_netflix_movie_added(
+    TIME_ID VARCHAR,
+    DATE_ADDED VARCHAR
+)comment ='this is netflix movie added table with in curated schema';
+
+-- transient table
+create or replace transient table curated_netflix_trends(
+    VIEWING_ID VARCHAR,
+    SHOW_ID VARCHAR,
+    TIME_ID VARCHAR,
+    COUNTRY_ID VARCHAR
+)comment ='this is netflix trends table with in curated schema';
